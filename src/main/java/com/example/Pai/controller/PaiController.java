@@ -48,15 +48,15 @@ public class PaiController {
             }
 
             switch (roles.get(i)) {
-                case "ROLE_TRENTO":
+                case "Trento":
                     uffici = uffici + " ufficioCaa = 1";
 
                     break;
-                case "ROLE_CLES":
+                case "Cles":
                     uffici = uffici + " ufficioCaa = 3";
 
                     break;
-                case "ROLE_MEZZOLOMBARDO":
+                case "Mezzolombardo":
                     uffici = uffici + " ufficioCaa = 4";
 
                     break;
