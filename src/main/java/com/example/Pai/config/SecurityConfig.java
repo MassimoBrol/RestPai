@@ -9,6 +9,9 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -53,7 +56,8 @@ public class SecurityConfig {
 
         http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(
                 (authorize) -> {
-                    authorize.requestMatchers("/api/**").permitAll()
+                    authorize.requestMatchers("/login").permitAll()
+                            .requestMatchers("/api/**").permitAll()
                             .anyRequest().authenticated();
                 }).httpBasic(Customizer.withDefaults());
 
