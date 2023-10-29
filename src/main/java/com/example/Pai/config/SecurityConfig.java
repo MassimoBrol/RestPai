@@ -5,14 +5,14 @@ import javax.sql.DataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -23,20 +23,6 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService user(DataSource dataSource) {
 
-        // create in memory user
-        /*
-         * UserDetails user1 =
-         * User.withUsername("Massimo").password("{noop}test123").roles("TRENTO").build(
-         * );
-         * UserDetails admin = User.withUsername("Admin").password("{noop}test123")
-         * .roles("TRENTO", "CLES", "MEZZOLOMBARDO").build();
-         * UserDetails user2 =
-         * User.withUsername("Mario").password("{noop}test123").roles("MEZZOLOMBARDO").
-         * build();
-         * UserDetails user3 =
-         * User.withUsername("Monica").password("{noop}test123").roles("CLES").build();
-         */
-
         // get users from DB
         JdbcUserDetailsManager users = new JdbcUserDetailsManager(dataSource);
 
@@ -45,23 +31,37 @@ public class SecurityConfig {
 
     }
 
+    // security filter chain
     @Bean
-    public AuthenticationManager authManager(AuthenticationConfiguration authConfiguration) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(Customizer.withDefaults())
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/api/**").permitAll()
+                        .anyRequest()
+                        .authenticated())
+                .httpBasic(Customizer.withDefaults())
+                .formLogin(Customizer.withDefaults());
 
-        return authConfiguration.getAuthenticationManager();
+        return http.build();
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public AuthenticationManager authManager(UserDetailsService userDetailSetvice, PasswordEncoder passwordEncoder) {
 
-        http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(
-                (authorize) -> {
-                    authorize.requestMatchers("/login").permitAll()
-                            .requestMatchers("/api/**").permitAll()
-                            .anyRequest().authenticated();
-                }).httpBasic(Customizer.withDefaults());
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
 
-        return http.build();
+        authenticationProvider.setUserDetailsService(userDetailSetvice);
+        authenticationProvider.setPasswordEncoder(passwordEncoder);
+
+        return new ProviderManager(authenticationProvider);
+
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
 }
