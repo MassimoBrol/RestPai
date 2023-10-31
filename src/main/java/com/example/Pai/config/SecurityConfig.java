@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -55,8 +56,12 @@ public class SecurityConfig {
                 (authorize) -> {
                     authorize.requestMatchers("/login").permitAll()
                             .requestMatchers("/api/**").permitAll()
+
                             .anyRequest().authenticated();
-                }).httpBasic(Customizer.withDefaults());
+                })
+                .securityContext(securityContext -> securityContext
+                        .securityContextRepository(new RequestAttributeSecurityContextRepository()))
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
