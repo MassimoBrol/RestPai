@@ -56,7 +56,6 @@ public class SecurityConfig {
                 (authorize) -> {
                     authorize.requestMatchers("/login").permitAll()
                             .requestMatchers("/api/**").permitAll()
-
                             .anyRequest().authenticated();
                 })
                 .securityContext(securityContext -> securityContext
@@ -65,6 +64,5 @@ public class SecurityConfig {
 
         return http.build();
     }
-
 
 }
