@@ -1,20 +1,18 @@
 package com.example.Pai.controller;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 public class PaiSecurityController {
@@ -28,7 +26,7 @@ public class PaiSecurityController {
     private SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
 
     @PostMapping("/login")
-    public void login(@RequestBody LoginRequest loginRequest, HttpServletRequest request,
+    public String login(@RequestBody LoginRequest loginRequest, HttpServletRequest request,
             HttpServletResponse response) {
 
         UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken
@@ -42,7 +40,9 @@ public class PaiSecurityController {
 
         SecurityContextHolder.setContext(context);
 
-        // securityContextRepository.saveContext(context, request, response);
+        securityContextRepository.saveContext(context, request, response);
+
+        return "Active User: " + loginRequest.username;
 
     }
 
