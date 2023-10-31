@@ -42,6 +42,8 @@ public class PaiSecurityController {
 
         securityContextRepository.saveContext(context, request, response);
 
+        System.out.println(loginRequest.username);
+
         return "Active User: " + loginRequest.username;
 
     }
