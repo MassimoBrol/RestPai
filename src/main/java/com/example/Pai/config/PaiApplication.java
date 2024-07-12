@@ -2,6 +2,7 @@ package com.example.Pai.config;
 
 import java.beans.PropertyVetoException;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
@@ -53,8 +54,8 @@ public class PaiApplication implements WebMvcConfigurer {
 		}
 
 		// log data
-		logger.info("jdbc.url=" + env.getProperty("jdbc.url"));
-		logger.info("jdbc.user=" + env.getProperty("jdbc.user"));
+		logger.log(Level.INFO, "jdbc.url={0}", env.getProperty("jdbc.url"));
+		logger.log(Level.INFO, "jdbc.user={0}", env.getProperty("jdbc.user"));
 
 		// set database connection props
 		myDataSource.setJdbcUrl(env.getProperty("jdbc.url"));
